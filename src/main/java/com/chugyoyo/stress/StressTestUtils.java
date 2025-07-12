@@ -10,8 +10,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Supplier;
 
@@ -44,12 +42,9 @@ public class StressTestUtils {
         private void run() {
             // 初始化统计结果
             statisticResult = StatisticResult.builder()
-                    .qps(new AtomicReference<>(BigDecimal.ZERO))
-                    .errorRate(new AtomicReference<>(BigDecimal.ZERO))
-                    .averageResponseTime(new AtomicReference<>(BigDecimal.ZERO))
                     .errorCount(new LongAdder())
                     .sampleCount(new LongAdder())
-                    .totalResponseTime(new AtomicLong(0))
+                    .totalResponseTime(new LongAdder())
                     .successCount(new LongAdder())
                     .build();
 
@@ -94,18 +89,6 @@ public class StressTestUtils {
     @Builder
     private static class StatisticResult {
         /**
-         * Throughput (QPS)：吞吐量，每秒处理的请求数
-         */
-        private AtomicReference<BigDecimal> qps;
-        /**
-         * Error Rate：错误率，请求出错的比例
-         */
-        private AtomicReference<BigDecimal> errorRate;
-        /**
-         * Average Response Time：平均响应时间 /ms，请求的平均处理时间
-         */
-        private AtomicReference<BigDecimal> averageResponseTime;
-        /**
          * Error Count：错误数量
          */
         private LongAdder errorCount;
@@ -120,47 +103,40 @@ public class StressTestUtils {
         /**
          * Total Response Time：总响应时间 /ns
          */
-        private AtomicLong totalResponseTime;
-        /**
-         * Max Response Time：最大响应时间 /ns
-         */
-        private AtomicReference<BigDecimal> maxResponseTime;
-        /**
-         * Min Response Time：最小响应时间 /ns
-         */
-        private AtomicReference<BigDecimal> minResponseTime;
+        private LongAdder totalResponseTime;
 
         private void statisticAndPrint() {
-            this.qps.getAndSet(
+            // Throughput (QPS)：吞吐量，每秒处理的请求数
+            BigDecimal qps = (
                     new BigDecimal(this.successCount.sum())
                             .multiply(new BigDecimal(1000_000_000))
-                            .divide(new BigDecimal(this.totalResponseTime.get()), 2, RoundingMode.HALF_UP)
+                            .divide(new BigDecimal(this.totalResponseTime.longValue()), 2, RoundingMode.HALF_UP)
             );
-            this.errorRate.getAndSet(
+            // Error Rate：错误率，请求出错的比例
+            BigDecimal errorRate = (
                     new BigDecimal(this.errorCount.sum())
                             .multiply(new BigDecimal(100))
                             .divide(new BigDecimal(this.sampleCount.sum()), 10, RoundingMode.HALF_UP)
             );
-            this.averageResponseTime.getAndSet(
-                    new BigDecimal(this.totalResponseTime.get())
+            // Average Response Time：平均响应时间 /ms，请求的平均处理时间
+            BigDecimal averageResponseTime = (
+                    new BigDecimal(this.totalResponseTime.longValue())
                             .divide(new BigDecimal(this.successCount.sum()), 10, RoundingMode.HALF_UP)
                             .divide(new BigDecimal(1000_000L), 10, RoundingMode.HALF_UP)
             );
-
             System.out.println("===result:===");
-            System.out.println("Throughput：" + qps.get() + " QPS");
-            System.out.println("Error Rate：" + errorRate.get() + " %");
-            System.out.println("Average Response Time：" + averageResponseTime.get() + " ms");
-            System.out.println("Error Count：" + errorCount.sum());
             System.out.println("Sample Count：" + sampleCount.sum());
-            System.out.println("Total Response Time：" + totalResponseTime.get() + " ns");
+            System.out.println("Error Count：" + errorCount.sum());
+            System.out.println("Error Rate：" + errorRate + " %");
+            System.out.println("Throughput：" + qps + " QPS");
+            System.out.println("Average Response Time：" + averageResponseTime + " ms");
         }
 
         public void recordResult(Long duration, boolean success) {
             this.sampleCount.increment();
             if (success) {
                 this.successCount.increment();
-                this.totalResponseTime.getAndAdd(duration);
+                this.totalResponseTime.add(duration);
             } else {
                 this.errorCount.increment();
             }
@@ -216,6 +192,6 @@ public class StressTestUtils {
             } catch (Exception e) {
                 return false;
             }
-        }, 2000, 5, 1000000);
+        }, 1000, 5, 1000);
     }
 }
