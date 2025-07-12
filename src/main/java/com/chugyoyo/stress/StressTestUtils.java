@@ -6,8 +6,8 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
@@ -49,11 +49,12 @@ public class StressTestUtils {
                     .build();
 
             // 定时输出 5s 输出 1 次
-            ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
-            scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> {
-                statisticResult.statisticAndPrint();
-            }, 5, 5, TimeUnit.SECONDS);
+//            ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
+//            scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> {
+//                statisticResult.statisticAndPrint();
+//            }, 5, 5, TimeUnit.SECONDS);
 
+            int allCount = config.numberOfThreads * config.loopCount;
             ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
                     config.numberOfThreads, config.numberOfThreads,
                     30L, TimeUnit.SECONDS,
@@ -61,7 +62,9 @@ public class StressTestUtils {
                     new ThreadPoolExecutor.CallerRunsPolicy()
             );
             int prestartAllCoreThreads = threadPoolExecutor.prestartAllCoreThreads();
-            System.out.println("prestartAllCoreThreads: " + prestartAllCoreThreads);
+            System.out.println("finish prestartAllCoreThreads: " + prestartAllCoreThreads);
+            CountDownLatch countDownLatch = new CountDownLatch(allCount);
+            long startNanoTime = System.nanoTime();
             for (int i = 0; i < config.numberOfThreads; i++) {
                 threadPoolExecutor.submit(() -> {
                     for (int j = 0; j < config.loopCount; j++) {
@@ -71,13 +74,26 @@ public class StressTestUtils {
                             success = task.get();
                         } catch (Exception e) {
                             success = false;
+                        } finally {
+                            // 计算响应时间
+                            long duration = System.nanoTime() - start;
+                            // 记录
+                            statisticResult.recordResult(duration, success);
+                            countDownLatch.countDown();
                         }
-                        // 计算响应时间
-                        long duration = System.nanoTime() - start;
-                        // 记录
-                        statisticResult.recordResult(duration, success);
                     }
                 });
+            }
+
+            try {
+                countDownLatch.await();
+                long endNanoTime = System.nanoTime();
+                statisticResult.setEndNanoTime(endNanoTime);
+                statisticResult.setStartNanoTime(startNanoTime);
+                // 输出结果
+                statisticResult.statisticAndPrint();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
     }
@@ -105,12 +121,15 @@ public class StressTestUtils {
          */
         private LongAdder totalResponseTime;
 
-        private void statisticAndPrint() {
+        private Long startNanoTime;
+        private Long endNanoTime;
+
+        private synchronized void statisticAndPrint() {
             // Throughput (QPS)：吞吐量，每秒处理的请求数
             BigDecimal qps = (
                     new BigDecimal(this.successCount.sum())
                             .multiply(new BigDecimal(1000_000_000))
-                            .divide(new BigDecimal(this.totalResponseTime.longValue()), 2, RoundingMode.HALF_UP)
+                            .divide(new BigDecimal(this.endNanoTime - this.startNanoTime), 2, RoundingMode.HALF_UP)
             );
             // Error Rate：错误率，请求出错的比例
             BigDecimal errorRate = (
@@ -192,6 +211,6 @@ public class StressTestUtils {
             } catch (Exception e) {
                 return false;
             }
-        }, 1000, 5, 1000);
+        }, 2000, 5, 10000);
     }
 }
