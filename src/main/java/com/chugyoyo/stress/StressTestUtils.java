@@ -1,6 +1,8 @@
 package com.chugyoyo.stress;
 
 import com.chugyoyo.id.IdWorker;
+import com.chugyoyo.id.SnowFlake;
+import com.chugyoyo.id.SnowFlakeFactory;
 import lombok.Builder;
 import lombok.Data;
 
@@ -48,12 +50,6 @@ public class StressTestUtils {
                     .successCount(new LongAdder())
                     .build();
 
-            // 定时输出 5s 输出 1 次
-//            ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
-//            scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> {
-//                statisticResult.statisticAndPrint();
-//            }, 5, 5, TimeUnit.SECONDS);
-
             int allCount = config.numberOfThreads * config.loopCount;
             ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
                     config.numberOfThreads, config.numberOfThreads,
@@ -94,6 +90,8 @@ public class StressTestUtils {
                 statisticResult.statisticAndPrint();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
+            } finally {
+                threadPoolExecutor.shutdown();
             }
         }
     }
@@ -204,9 +202,11 @@ public class StressTestUtils {
 
     public static void main(String[] args) {
         IdWorker idWorker = new IdWorker(null);
+        SnowFlake snowFlake = new SnowFlake(1, 1);
         test(() -> {
             try {
-                idWorker.nextId();
+//                idWorker.nextId();
+                snowFlake.nextId();
                 return true;
             } catch (Exception e) {
                 return false;

@@ -1,5 +1,7 @@
 package com.chugyoyo.id;
 
+import com.chugyoyo.common.SystemClock;
+
 import java.net.NetworkInterface;
 import java.util.Enumeration;
 import java.util.Random;
@@ -87,7 +89,7 @@ public class IdWorker {
 
     // 获取当前系统时间（毫秒）
     private long timeGen() {
-        return System.currentTimeMillis();
+        return SystemClock.millisClock().now();
     }
 
     // 生成工作节点ID
