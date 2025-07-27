@@ -5,46 +5,22 @@ import lombok.Getter;
 import lombok.Setter;
 
 // 深、浅、引用拷贝
-public class CopyTest {
+@AllArgsConstructor
+public class CopyTest implements Cloneable { // 必须实现 Cloneable 接口，否则抛出 java.lang.CloneNotSupportedException
 
-    private static class A implements Cloneable {
+    int a;
+    @Getter @Setter
+    CopyInner copyInner; // 对比深、浅拷贝的区别
 
-        @AllArgsConstructor
-        private static class AInner implements Cloneable {
-            @Setter @Getter
-            int inner;
-
-            @Override
-            public AInner clone() {
-                try {
-                    AInner clone = (AInner) super.clone();
-                    // TODO: copy mutable state here, so the clone can't change the internals of the original
-                    return clone;
-                } catch (CloneNotSupportedException e) {
-                    throw new AssertionError();
-                }
-            }
-        }
-
-        int a;
-        @Setter @Getter
-        AInner aInner = new AInner(10);
+    @AllArgsConstructor
+    private static class CopyInner implements Cloneable{
+        @Getter
+        int inner;
 
         @Override
-        protected A clone() {
-            // 默认浅拷贝
+        public CopyInner clone() {
             try {
-                return (A) super.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        // 深拷贝
-        protected A deepClone() {
-            try {
-                A clone = (A) super.clone(); // 浅拷贝
-                clone.setAInner(this.aInner.clone()); // 浅拷贝
+                CopyInner clone = (CopyInner) super.clone();
                 return clone;
             } catch (CloneNotSupportedException e) {
                 throw new RuntimeException(e);
@@ -52,19 +28,40 @@ public class CopyTest {
         }
     }
 
+    @Override // 默认浅拷贝
+    protected CopyTest clone() {
+        // 默认浅拷贝
+        try {
+            return (CopyTest) super.clone();
+        } catch (CloneNotSupportedException e) { // 抓住的异常无需在接口声明
+            throw new RuntimeException(e);
+        }
+    }
+
+    // 深拷贝（新写方法，或放在 clone() 方法中）
+    protected CopyTest deepClone() {
+        try {
+            CopyTest clone = (CopyTest) super.clone(); // 浅拷贝
+            clone.setCopyInner(this.copyInner.clone()); // 浅拷贝
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void main(String[] args) {
-        A a1 = new A();
+        CopyTest a1 = new CopyTest(10, new CopyInner(10));
 
         // 浅拷贝
-        A a2 = a1.clone();
-        System.out.println(a1.aInner == a2.aInner); // true
+        CopyTest a2 = a1.clone();
+        System.out.println(a1.getCopyInner() == a2.getCopyInner()); // true
 
         // 深拷贝
-        A a3 = a1.deepClone();
-        System.out.println(a1.aInner == a3.aInner); // false
+        CopyTest a3 = a1.deepClone();
+        System.out.println(a1.getCopyInner() == a3.getCopyInner()); // false
 
         // 引用拷贝
-        A a4 = a1;
+        CopyTest a4 = a1;
         System.out.println(a1 == a4); // true
     }
 }
