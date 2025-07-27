@@ -1,4 +1,4 @@
-package com.chugyoyo.checker;
+package com.chugyoyo.web.annotation.source;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
