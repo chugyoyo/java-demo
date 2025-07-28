@@ -1,6 +1,6 @@
 package com.chugyoyo.web;
 
-import com.chugyoyo.web.annotation.source.SpringCodeCheck;
+import com.chugyoyo.web.javabase.annotation.source.SpringCodeCheck;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
