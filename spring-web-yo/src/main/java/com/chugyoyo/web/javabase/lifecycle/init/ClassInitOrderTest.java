@@ -1,4 +1,4 @@
-package com.chugyoyo.web.javabase.classload.init;
+package com.chugyoyo.web.javabase.lifecycle.init;
 
 public class ClassInitOrderTest {
 

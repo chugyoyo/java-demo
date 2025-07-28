@@ -1,4 +1,4 @@
-package com.chugyoyo.web.javabase.classload;
+package com.chugyoyo.web.javabase.lifecycle.load;
 
 public class ClassLoadTest {
 

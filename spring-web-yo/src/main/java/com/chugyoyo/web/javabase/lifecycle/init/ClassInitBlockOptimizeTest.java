@@ -1,4 +1,4 @@
-package com.chugyoyo.web.javabase.classload.init;
+package com.chugyoyo.web.javabase.lifecycle.init;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
