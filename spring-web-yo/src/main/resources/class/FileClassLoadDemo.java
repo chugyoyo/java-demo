@@ -4,6 +4,10 @@ public class FileClassLoadDemo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    static {
+        System.out.println("FileClassLoadDemo static block called");
+    }
+
     public FileClassLoadDemo() {
         System.out.println(this + " constructor called");
     }
