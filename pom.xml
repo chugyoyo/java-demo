@@ -3,7 +3,7 @@
          xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>chug-java-yo</artifactId>
-    <name>java-yo</name>
+    <name>chug-java-yo</name>
     <groupId>com.chugyoyo</groupId>
     <version>1.0.0-SNAPSHOP</version>
     <!--
@@ -17,8 +17,8 @@
         <module>chug-base-yo</module>
     </modules>
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-boot.version>2.6.3</spring-boot.version>
     </properties>
