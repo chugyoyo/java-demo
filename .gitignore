@@ -1,0 +1,11 @@
+**/target/
+**/.settings/
+**/logs/
+**/.project
+**/.classpath
+**/*.imi
+**/*.iml
+**/.idea
+**/*.logs
+*.iml
+run.bat

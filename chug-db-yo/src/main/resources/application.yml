@@ -1,0 +1,13 @@
+
+spring:
+  datasource:
+    url: >- # 多行配置
+      jdbc:mysql://localhost:3306/chug_java_yo
+      ?useUnicode=true&characterEncoding=UTF-8&connectTimeout=2000&socketTimeout=5000
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+    # 连接池类型 Springboot 2.0 选择 HikariCP 作为默认数据库连接池。
+    type: com.alibaba.druid.pool.DruidDataSource
+server:
+  port: 8081

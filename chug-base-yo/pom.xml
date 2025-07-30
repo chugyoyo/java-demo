@@ -2,26 +2,33 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
          xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>chug-java-yo</artifactId>
-    <name>java-yo</name>
-    <groupId>com.chugyoyo</groupId>
+    <parent>
+        <groupId>com.chugyoyo</groupId>
+        <artifactId>chug-java-yo</artifactId>
+        <version>1.0.0-SNAPSHOP</version>
+    </parent>
+    <artifactId>chug-base-yo</artifactId>
+    <name>spring-tool-yo</name>
     <version>1.0.0-SNAPSHOP</version>
-    <!--
-        在 Maven 的多模块项目中，父项目的打包类型必须为 `pom`，而子模块可以是 `jar`、`war` 或其他。
-        如果父项目的 `pom.xml` 文件中没有设置 `<packaging>pom</packaging>`，或者错误地设置为其他类型（如 `jar`），就会导致 must be "pom" but is "jar" 错误。
-    -->
-    <packaging>pom</packaging>
-    <modules>
-        <module>chug-web-yo</module>
-        <module>chug-db-yo</module>
-        <module>chug-base-yo</module>
-    </modules>
+    <!--    <packaging>jar</packaging>-->
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-boot.version>2.6.3</spring-boot.version>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+            <version>2.7.18</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.38</version>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>
