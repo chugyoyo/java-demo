@@ -14,7 +14,7 @@ public class ChugUserTestController {
     @Autowired
     private ChugUserMapper chugUserMapper;
 
-    @RequestMapping("/get-user-name")
+    @RequestMapping("/get-user-name-test-1")
     public String getUserName(@RequestParam(value = "id", required = true) Long id,
                               @RequestParam(value = "status", required = false) Integer status) {
         if (status == null) {
