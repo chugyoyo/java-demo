@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.lang.reflect.UndeclaredThrowableException;
+
 /**
  * 全局异常处理
  *
@@ -23,12 +25,27 @@ public class GlobalExceptionHandler {
         return errorResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGlobalException(Exception e) {
+    /**
+     * UndeclaredThrowableException 本质：
+     * <p>
+     * 当代理对象（Spring AOP 生成的）抛出了被代理方法未声明的“检查异常”（非 RuntimeException 的异常）时发生，原始方法未声明 throws xxException
+     *
+     * @param e UndeclaredThrowableException
+     * @return
+     */
+    @ExceptionHandler(UndeclaredThrowableException.class)
+    public ResponseEntity<String> handleUndeclaredThrowableException(Exception e) {
         log.error(e.getMessage(), e);
         return errorResponse("系统异常，请联系管理员", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+        log.error(e.getMessage(), e);
+        return errorResponse("系统异常，请联系管理员", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    // 这里返回的格式，与前端约定好，ResponseEntity：http 层面，body 可以封装自定义的格式
     public static ResponseEntity<String> errorResponse(String message, HttpStatus status) {
         return ResponseEntity.status(status).body(message);
     }
