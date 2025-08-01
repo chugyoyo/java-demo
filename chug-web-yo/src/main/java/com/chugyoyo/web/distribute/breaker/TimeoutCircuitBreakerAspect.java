@@ -8,6 +8,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.*;
 
+/**
+ * 超时断路器 AOP 切面
+ *
+ * @author chugyoyo
+ * @since 2025/8/1
+ */
 @Aspect
 @Component
 public class TimeoutCircuitBreakerAspect {
@@ -36,19 +42,17 @@ public class TimeoutCircuitBreakerAspect {
             return future.get(timeout, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
             future.cancel(true); // 中断方法执行
-            return handleTimeout(joinPoint, fallbackMethod); // 处理超时
+            if (!fallbackMethod.isEmpty()) {
+                // 执行降级方法
+                return callFallbackMethod(joinPoint, fallbackMethod);
+            }
+            throw new RuntimeException("Method execution timed out");
         } catch (ExecutionException e) {
-            throw e.getCause(); // 抛出原始异常
+            throw new RuntimeException("Execution failed", e.getCause());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Operation interrupted");
         }
-    }
-
-    private Object handleTimeout(ProceedingJoinPoint joinPoint, String fallbackMethod)
-            throws Throwable {
-        if (!fallbackMethod.isEmpty()) {
-            // 执行降级方法
-            return callFallbackMethod(joinPoint, fallbackMethod);
-        }
-        throw new TimeoutException("Method execution timed out");
     }
 
     private Object callFallbackMethod(ProceedingJoinPoint joinPoint, String fallbackMethod)
