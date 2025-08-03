@@ -63,9 +63,8 @@ public class ChugUserTestController {
                 userName = userIdUserNameLocalCache.getIfPresent(id);
                 if (userName == null) {
                     userName = chugUserMapper.getUserNameById(id);
-                    userIdUserNameLocalCache.put(id,
-                            userName == null ? "" : userName // 空值解穿透，但可能会污染业务
-                    );
+                    userName = userName == null ? "" : userName; // 空值解穿透，但可能会污染业务
+                    userIdUserNameLocalCache.put(id, userName);
                 }
                 return userName;
             }
