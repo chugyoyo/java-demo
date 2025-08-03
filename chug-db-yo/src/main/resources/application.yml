@@ -10,3 +10,8 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
 server:
   port: 8081
+
+logging:
+  level:
+    ## 日志级别 DEBUG
+    com.chugyoyo.db.controller.ChugUserTestController: debug

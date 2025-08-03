@@ -28,8 +28,23 @@ public class ChugUserTestController {
             //最大容量 10000 个，超过会自动清理空间
             .maximumSize(10_000)
             .removalListener(((key, value, cause) -> {
-                // 清理通知 key,value ==> 键值对   cause ==> 清理原因
-                // System.out.printf("Key %s was removed (%s)%n", key, cause);
+                switch (cause) {
+                    case EXPLICIT: // 手动无效
+                        log.debug("手动删除: {}", key);
+                        break;
+                    case REPLACED: // 值被替换
+                        log.debug("值替换: {}", key);
+                        break;
+                    case EXPIRED: // 过期驱逐
+                        log.debug("过期删除: {}", key);
+                        break;
+                    case SIZE: // 大小驱逐
+                        log.debug("空间不足删除: {}", key);
+                        break;
+                    case COLLECTED: // 引用回收
+                        log.debug("GC回收: {}", key);
+                        break;
+                }
             }))
             .recordStats() // 记录
             .build();
@@ -38,7 +53,7 @@ public class ChugUserTestController {
     @Scheduled(fixedRate = 60_000)
     public void logCacheStats() {
         CacheStats stats = userIdUserNameLocalCache.stats();
-        log.info("缓存命中率: {}%, 加载次数: {}", stats.hitRate() * 100, stats.loadCount());
+        log.debug("缓存命中率: {}%, 加载次数: {}", stats.hitRate() * 100, stats.loadCount());
     }
 
     @Autowired
