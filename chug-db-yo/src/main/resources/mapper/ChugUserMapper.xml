@@ -11,4 +11,11 @@
             </if>
         </where>
     </select>
+
+    <select id="getUserNameById" resultType="java.lang.String">
+        select user_name from chug_user
+        <where>
+            id = #{id}
+        </where>
+    </select>
 </mapper>
