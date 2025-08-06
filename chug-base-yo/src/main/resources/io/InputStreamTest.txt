@@ -1,3 +1,4 @@
 chugyoyo since 20250806
 test input stream
 test input stream
+中文
