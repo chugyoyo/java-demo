@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Objects;
 
@@ -38,8 +39,8 @@ public class WriterTest {
     }
 
     public static void testBufferedWriter () {
-        try (Writer writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
-            writer.write("testBufferedWriter");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
+            writer.write("testBufferedWriter",0 , "testBufferedWriter".length());
             writer.flush();
 //            writer.close();
         } catch (IOException e) {
@@ -47,12 +48,21 @@ public class WriterTest {
         }
     }
 
+    public static void testPrintWriter () {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(FILE_PATH))) {
+            pw.println("hello world");
+            pw.printf("PI = %.4f%n", Math.PI);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
 
 
     public static void main(String[] args) {
-        testOutputStreamWriter();
-        testFileWriter();
-        testBufferedWriter();
+//        testOutputStreamWriter();
+//        testFileWriter();
+//        testBufferedWriter();
+        testPrintWriter();
     }
 
 }

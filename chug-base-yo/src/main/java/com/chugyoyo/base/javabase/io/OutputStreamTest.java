@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.PrintStream;
 import java.util.Objects;
 
 @Slf4j
@@ -50,7 +51,7 @@ public class OutputStreamTest {
 
         try {
             byte[] bytes = "Hello, World!".getBytes();
-            bufferedOutputStream.write(bytes);
+            bufferedOutputStream.write(bytes, 0, bytes.length);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         } finally {
@@ -111,10 +112,20 @@ public class OutputStreamTest {
         }
     }
 
+    public static void testPrintStream() {
+        try (PrintStream ps = new PrintStream(new FileOutputStream(FILE_PATH))) {
+            ps.println("hello world");
+            ps.printf("格式输出: %d, %.2f, %s%n", 100, 3.1415, "Java");
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
     public static void main(String[] args) {
 //        testFileOutputStream();
 //        testBufferedOutputStream();
 //        testDataOutputStream();
-        testObjectOutputStream();
+//        testObjectOutputStream();
+        testPrintStream();
     }
 }

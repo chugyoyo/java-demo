@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
@@ -55,13 +56,13 @@ public class InputStreamTest {
         }
         long start = System.currentTimeMillis();
         try {
-            byte[] buffer = new byte[1024];
             int bytesRead;
-            while ((bytesRead = bufferedInputStream.read(buffer)) != -1) {
+            StringBuffer stringBuffer = new StringBuffer();
+            while ((bytesRead = bufferedInputStream.read()) != -1) {
                 // 处理读取的数据
-                log.info("read {} bytes", bytesRead);
-                log.info("read data: {}", new String(buffer, 0, bytesRead, StandardCharsets.UTF_8));
+                stringBuffer.append(bytesRead);
             }
+            log.info("read chars: {}", stringBuffer);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }
@@ -109,8 +110,8 @@ public class InputStreamTest {
 
     public static void main(String[] args) {
 //        testFileInputStream();
-//        testBufferedInputStream();
+        testBufferedInputStream();
 //        testDataInputStream();
-        testObjectInputStream();
+//        testObjectInputStream();
     }
 }

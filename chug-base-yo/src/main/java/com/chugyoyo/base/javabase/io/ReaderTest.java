@@ -46,13 +46,11 @@ public class ReaderTest {
     }
 
     public static void testBufferedReader() {
-        try (Reader reader = new BufferedReader(new FileReader(FILE_PATH))) {
-            char[] buffer = new char[1024];
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             int charsRead;
-            while ((charsRead = reader.read(buffer)) != -1) {
-                String content = new String(buffer, 0, charsRead);
-                log.info("read {} chars", charsRead);
-                log.info("content:{}", content);
+            while ((charsRead = reader.read()) != -1) {
+                char content = (char) charsRead;
+                log.info("read {} char", content);
             }
         } catch (IOException e) {
             log.error(e.getMessage(), e);
@@ -60,8 +58,8 @@ public class ReaderTest {
     }
 
     public static void main(String[] args) {
-        testInputStreamReader();
-        testFileReader();
+//        testInputStreamReader();
+//        testFileReader();
         testBufferedReader();
     }
 }
