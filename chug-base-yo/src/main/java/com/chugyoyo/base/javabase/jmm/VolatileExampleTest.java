@@ -16,24 +16,16 @@ import java.util.concurrent.Executors;
 @Slf4j
 public class VolatileExampleTest {
 
-    @ToString
-    private static class Result {
-        BigDecimal nanoTime;
-        int value;
-        boolean isGet = false;
-
-        public Result(Long nanoTime, int value, boolean isGet) {
-            this.nanoTime = new BigDecimal(nanoTime);
-            this.value = value;
-            this.isGet = isGet;
-        }
-    }
-
-    // TODO 没有复现可见性问题？why？
+    /**
+     * 没有复现可见性问题，说明一般情况下，线程共享的变量不会有可见性问题
+     * <p>
+     * 不管是 static 还是 普通成员变量，都是这样
+     * <p>
+     * 不过，{@link VolatileVisibilityDemo} 这个demo 才是复现可见性问题的场景
+     */
     public static void main(String[] args) {
 
-        PriorityQueue<Result> priorityQueue = new PriorityQueue<>((a, b) -> a.nanoTime.compareTo(b.nanoTime));
-        int getThreadNum = 10;
+        int getThreadNum = 1;
         int totalThreadNum = getThreadNum + 1;
         ExecutorService threadPool = Executors.newFixedThreadPool(getThreadNum + 1);
         CountDownLatch countDownLatch = new CountDownLatch(totalThreadNum);
@@ -46,12 +38,9 @@ public class VolatileExampleTest {
             } catch (InterruptedException | BrokenBarrierException e) {
                 throw new RuntimeException(e);
             }
-            for (int i = 0; i < 10000; i++) {
-                log.info("线程1 执行 i = {}", i);
-                volatileExample.value = i;
-//                log.info("当前时间：{}，线程1设置的值为：{}", System.nanoTime(), i);
-                priorityQueue.add(new Result(System.nanoTime(), i, false));
-            }
+//            volatileExample.setRunning(false);
+            VolatileExample.isRunning2 = false;
+            log.info("线程1 执行完毕，暂停所有任务");
             countDownLatch.countDown();
         });
         for (int j = 0; j < getThreadNum; j++) {
@@ -63,16 +52,21 @@ public class VolatileExampleTest {
                 } catch (InterruptedException | BrokenBarrierException e) {
                     throw new RuntimeException(e);
                 }
-                for (int i = 0; i < 10000; i++) {
-                    log.info("线程{} 执行 i = {}", finalJ, i);
-                    long nanoTime = System.nanoTime();
-                    int value = volatileExample.value;
-//                log.info("当前时间：{}，线程2获取到的值为：{}", nanoTime, value);
-                    priorityQueue.add(new Result(nanoTime, value, true));
+//                for (int i = 0; i < 10000; i++) {
+//                    if (!volatileExample.isRunning() || !VolatileExample.isRunning2) {
+//                        break;
+//                    }
+//                    log.info("线程{} 执行 i = {}", finalJ, i);
+//                }
+                while (volatileExample.isRunning() && VolatileExample.isRunning2) {
+//                    log.info("线程{} 执行", finalJ);
                 }
+                log.info("线程{} 结束执行", finalJ);
                 countDownLatch.countDown();
             });
         }
+
+//        VolatileExample.isRunning2 = false;
 
         try {
             countDownLatch.await();
@@ -82,22 +76,6 @@ public class VolatileExampleTest {
         }
 
         threadPool.shutdown();
-
-        if (!priorityQueue.isEmpty()) {
-            Result result1 = priorityQueue.poll();
-            while (!priorityQueue.isEmpty()) {
-                Result result2 = priorityQueue.poll();
-                if (
-                        !result1.isGet && result2.isGet
-                                &&
-                                result1.nanoTime.compareTo(result2.nanoTime) < 0
-                                && result1.value > result2.value
-                ) {
-                    log.info("出现【指令重排序】导致的异常：result1={}, result2={}", result1, result2);
-                }
-                result1 = result2;
-            }
-        }
 
         log.info("测试完成");
     }

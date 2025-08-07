@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 可见性问题演示：主线程修改标志位后，工作线程无法感知
+ * <p>
  * 使用 volatile 解决可见性问题
  */
 public class VolatileVisibilityDemo {
@@ -11,7 +12,7 @@ public class VolatileVisibilityDemo {
     // 关键变量：不使用 volatile 会导致可见性问题
     private static
 //    volatile
-    boolean running = true;
+            boolean running = true;
 
     public static void main(String[] args) throws InterruptedException {
         // 工作线程：监控 running 标志位
