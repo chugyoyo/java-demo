@@ -1,4 +1,4 @@
-package com.chugyoyo.base.javabase.jmm;
+package com.chugyoyo.base.javabase.jmm.visibility;
 
 import java.util.concurrent.TimeUnit;
 

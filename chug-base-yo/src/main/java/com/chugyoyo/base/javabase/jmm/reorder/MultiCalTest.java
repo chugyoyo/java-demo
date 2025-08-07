@@ -1,4 +1,4 @@
-package com.chugyoyo.base.javabase.jmm;
+package com.chugyoyo.base.javabase.jmm.reorder;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,12 +16,12 @@ public class MultiCalTest {
     int a = 0;
     boolean flag = false;
 
-    public void method1 () {
+    public void method1() {
         a = new Random().nextInt(100) + 1; // 语句1
         flag = true;    // 语句2
     }
 
-    public void method2 () {
+    public void method2() {
         if (flag) {     // 语句3
             int b = a;  // 语句4
             if (b == 0) {
@@ -30,6 +30,11 @@ public class MultiCalTest {
         }
     }
 
+    /**
+     * 测试不出指令重排序
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         ExecutorService threadPool = Executors.newFixedThreadPool(2);
         for (int i = 0; i < 1000000; i++) {

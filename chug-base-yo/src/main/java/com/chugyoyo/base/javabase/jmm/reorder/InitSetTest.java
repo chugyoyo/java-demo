@@ -1,15 +1,14 @@
-package com.chugyoyo.base.javabase.jmm;
+package com.chugyoyo.base.javabase.jmm.reorder;
 
 /**
  * 初始化和 set 的指令重排序测试
+ * <p>
  * 看操作系统、JVM 版本等因素
  */
-public class InitSetTest
-{
+public class InitSetTest {
     private int i;
 
-    public InitSetTest()
-    {
+    public InitSetTest() {
         i = 1;
     }
 
@@ -20,8 +19,7 @@ public class InitSetTest
     //         4: invokespecial #4                  // Method "<init>":()V
     //         7: astore_1
     //         8: return
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         InitSetTest t = new InitSetTest();
     }
 }

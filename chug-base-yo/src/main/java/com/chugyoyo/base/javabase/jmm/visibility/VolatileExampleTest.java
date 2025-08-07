@@ -1,12 +1,7 @@
-package com.chugyoyo.base.javabase.jmm;
+package com.chugyoyo.base.javabase.jmm.visibility;
 
-import lombok.AllArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
-import java.math.BigDecimal;
-import java.util.PriorityQueue;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;

@@ -1,4 +1,4 @@
-package com.chugyoyo.base.javabase.jmm;
+package com.chugyoyo.base.javabase.jmm.reorder;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,6 +11,11 @@ import java.util.concurrent.Executors;
 @Slf4j
 public class NoVolatileSingletonTest {
 
+    /**
+     * 测试不出指令重排序问题
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         int threadCount = 100;
         ExecutorService executorService = Executors.newFixedThreadPool(threadCount);

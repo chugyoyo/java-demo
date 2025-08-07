@@ -1,4 +1,4 @@
-package com.chugyoyo.base.javabase.jmm;
+package com.chugyoyo.base.javabase.jmm.atomic;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,7 +21,7 @@ public class IPlusPlusTest {
         i++;
     }
 
-    public static void main(String[] args) {
+    public static void test1 () {
         IPlusPlusTest iPlusPlusTest = new IPlusPlusTest();
         int threadNum = Runtime.getRuntime().availableProcessors() * 8;
         ExecutorService executorService = Executors.newFixedThreadPool(threadNum);
@@ -50,6 +50,16 @@ public class IPlusPlusTest {
         }
         log.info("final i: {}", iPlusPlusTest.getI());
         executorService.shutdown();
+    }
+
+    public static void test2 () {
+        for (int i = 0; i < 200; i++) {
+
+        }
+    }
+
+    public static void main(String[] args) {
+
     }
 
 
