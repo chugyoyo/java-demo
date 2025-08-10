@@ -1,6 +1,7 @@
 package com.chugyoyo.web.websocket;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.OnClose;
@@ -13,12 +14,15 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+@Slf4j
 @Component
 @ServerEndpoint("/websocket-endpoint")
 public class WebSocketServerEndpoint {
 
-    @Getter
-    private static final Set<WebSocketServerEndpoint> connections = new CopyOnWriteArraySet<>();
+    /**
+     * 集中管理所有连接的 WebSocket 客户端
+     */
+    public static final Set<WebSocketServerEndpoint> connections = new CopyOnWriteArraySet<>();
 
     private Session session;
 
@@ -26,13 +30,13 @@ public class WebSocketServerEndpoint {
     public void onOpen(Session session) {
         this.session = session;
         connections.add(this);
-        System.out.println("新连接: " + session.getId());
+        log.info("新连接: {}", session.getId());
         sendMessage("欢迎连接到 WebSocket 服务！");
     }
 
     @OnMessage
     public void onMessage(String message) {
-        System.out.println("收到消息: " + message);
+        log.info("收到消息: {}", message);
         // 广播消息
         for (WebSocketServerEndpoint client : connections) {
             client.sendMessage("客户端[" + session.getId() + "]说: " + message);
@@ -42,19 +46,19 @@ public class WebSocketServerEndpoint {
     @OnClose
     public void onClose() {
         connections.remove(this);
-        System.out.println("连接关闭: " + session.getId());
+        log.info("连接关闭: {}", session.getId());
     }
 
     @OnError
     public void onError(Throwable error) {
-        System.err.println("错误: " + error.getMessage());
+        log.error("错误: {}", error.getMessage());
     }
 
-    private void sendMessage(String msg) {
+    public void sendMessage(String msg) {
         try {
             session.getBasicRemote().sendText(msg);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("发送消息失败: {}, 消息: {}", e.getMessage(), msg, e);
         }
     }
 }
