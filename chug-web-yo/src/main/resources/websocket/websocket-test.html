@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Spring Boot WebSocket 测试</title>
+</head>
+<body>
+<h2>WebSocket 测试页面</h2>
+<input id="msg" type="text" placeholder="输入消息">
+<button onclick="sendMsg()">发送</button>
+<div id="log" style="margin-top: 20px; border: 1px solid #ccc; padding: 10px; height: 200px; overflow-y: auto;"></div>
+
+<script>
+    let remoteHost = "localhost:8081"
+    let remoteAddress = "ws://" + remoteHost + "/websocket-endpoint";
+    let ws = new WebSocket(remoteAddress);
+    let logDiv = document.getElementById("log");
+
+    ws.onopen = () => log("✅ 已连接服务器");
+    ws.onmessage = (event) => log("📩 收到: " + event.data);
+    ws.onclose = () => log("❌ 连接已关闭");
+    ws.onerror = (err) => log("⚠️ 错误: " + err);
+
+    function sendMsg() {
+        let msg = document.getElementById("msg").value;
+        ws.send(msg);
+        log("📤 发送: " + msg);
+    }
+
+    function log(message) {
+        logDiv.innerHTML += message + "<br>";
+        logDiv.scrollTop = logDiv.scrollHeight;
+    }
+</script>
+</body>
+</html>
