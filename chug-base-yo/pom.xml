@@ -8,7 +8,6 @@
         <version>1.0.0-SNAPSHOP</version>
     </parent>
     <artifactId>chug-base-yo</artifactId>
-    <name>spring-tool-yo</name>
     <version>1.0.0-SNAPSHOP</version>
     <!--    <packaging>jar</packaging>-->
     <properties>
