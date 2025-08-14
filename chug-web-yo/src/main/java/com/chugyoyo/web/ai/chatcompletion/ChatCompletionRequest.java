@@ -1,4 +1,4 @@
-package com.chugyoyo.web.ai.dto;
+package com.chugyoyo.web.ai.chatcompletion;
 
 import lombok.Builder;
 import lombok.Data;

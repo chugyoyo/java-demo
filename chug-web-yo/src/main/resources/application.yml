@@ -1,7 +1,2 @@
 server:
   port: 8081
-
-chat-ai:
-  api-key: sk-xxxx
-  base-url: https://api.siliconflow.cn/v1/chat/completions
-  model: deepseek-ai/DeepSeek-V3

@@ -1,4 +1,4 @@
-package com.chugyoyo.web.ai;
+package com.chugyoyo.web.ai.chatcompletion;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

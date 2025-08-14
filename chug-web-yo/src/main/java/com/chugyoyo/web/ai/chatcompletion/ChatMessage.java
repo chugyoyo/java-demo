@@ -1,4 +1,4 @@
-package com.chugyoyo.web.ai.dto;
+package com.chugyoyo.web.ai.chatcompletion;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;

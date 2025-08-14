@@ -1,10 +1,6 @@
-package com.chugyoyo.web.ai;
+package com.chugyoyo.web.ai.chatcompletion;
 
 import com.alibaba.fastjson2.JSON;
-import com.chugyoyo.web.ai.dto.ChatCompletionChoice;
-import com.chugyoyo.web.ai.dto.ChatCompletionRequest;
-import com.chugyoyo.web.ai.dto.ChatCompletionResult;
-import com.chugyoyo.web.ai.dto.ChatMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;

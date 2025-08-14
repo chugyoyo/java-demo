@@ -1,4 +1,4 @@
-package com.chugyoyo.web.ai.dto;
+package com.chugyoyo.web.ai.chatcompletion;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
