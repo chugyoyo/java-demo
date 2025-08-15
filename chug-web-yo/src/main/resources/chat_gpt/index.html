@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>本地 ChatGPT 风格（Vue + Ollama）</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="container">
+        <div class="brand">
+          <div class="dot" :style="{ background: connected ? 'var(--accent)' : 'var(--danger)' }"></div>
+          <h1>Chat · Vue + Ollama <span class="chip" style="margin-left:8px">无打包·单文件</span></h1>
+        </div>
+        <div class="toolbar">
+          <input class="input" v-model.trim="state.baseUrl" placeholder="Ollama 地址，如 http://localhost:11434" />
+          <input class="input" v-model.trim="state.model" placeholder="模型，如 llama3.2 或 qwen2.5:7b" />
+          <select v-model="state.stream" class="input">
+            <option :value="true">流式</option>
+            <option :value="false">非流式</option>
+          </select>
+          <button class="btn ghost" @click="clearChat">清空</button>
+          <button class="btn ghost" @click="testConnection">测试连接</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div ref="chatEl" class="chat">
+        <div v-if="error" class="error">{{ error }}</div>
+        <div v-for="(m,i) in messages" :key="i" class="msg" :class="m.role">
+          <div class="avatar">{{ m.role === 'user' ? 'U' : 'AI' }}</div>
+          <div>
+            <div class="meta">
+              <span class="chip">{{ m.role === 'user' ? '用户' : '助手' }}</span>
+              <span class="chip" v-if="m.meta?.model">{{ m.meta.model }}</span>
+              <span class="chip" v-if="m.meta?.tps">{{ m.meta.tps }} tok/s</span>
+              <span v-if="m.meta?.time" class="hide-sm">{{ m.meta.time }}</span>
+            </div>
+            <div class="bubble">{{ m.content }}</div>
+          </div>
+        </div>
+        <div v-if="isLoading" class="status"><span class="pulse"></span> 正在思考…</div>
+      </div>
+    </main>
+
+    <div class="composer">
+      <div class="wrap">
+        <div class="top">
+          <textarea
+            class="input"
+            v-model="draft"
+            placeholder="提问吧… (Enter 发送，Shift+Enter 换行)"
+            @keydown.enter.exact.prevent="send()"
+            @keydown.enter.shift.exact="newline"
+            rows="1"
+            ref="ta"
+          ></textarea>
+          <button class="btn primary" @click="send" :disabled="!draft || isLoading">发送</button>
+          <button class="btn" @click="abort" :disabled="!isLoading">中止</button>
+        </div>
+        <div class="status">
+          <span>模型：<strong>{{ state.model || '未设置' }}</strong></span>
+          <span class="hide-sm">·</span>
+          <span class="hide-sm kbd">提示：Enter 发送，Shift+Enter 换行</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
