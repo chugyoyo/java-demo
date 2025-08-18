@@ -2,6 +2,7 @@ package com.chugyoyo.web.nio;
 
 import com.chugyoyo.web.distribute.monitor.Monitor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
@@ -17,7 +18,8 @@ import java.nio.channels.WritableByteChannel;
 /**
  * 测试零拷贝
  */
-@RestController("/zero-copy")
+@RequestMapping("/zero-copy")
+@RestController
 public class ZeroCopyController {
 
     private static final String FILE_PATH = "/tmp/testfile.bin";
@@ -47,7 +49,6 @@ public class ZeroCopyController {
 
     /**
      * 零拷贝下载（FileChannel.transferTo -> sendfile）
-     * {@link ZeroCopyNettyServer}
      */
     @Monitor
     @GetMapping("/download/zerocopy")
