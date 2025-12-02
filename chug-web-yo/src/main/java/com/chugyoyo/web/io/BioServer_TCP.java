@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class BioServer_HTTP {
+public class BioServer_TCP {
     private static final int PORT = 8080;
     private static final ExecutorService executorService = Executors.newFixedThreadPool(500);
 
